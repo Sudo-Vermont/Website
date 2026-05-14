@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chain Templates — GoodStuff</title>
+  <meta name="description" content="Browse all FiveM chain templates. Instantly downloadable. $10 each."/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-hero {
+      padding: 160px 60px 80px;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(150,0,0,0.15) 0%, transparent 55%);
+    }
+    .page-hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    }
+    .page-hero-content { position: relative; z-index: 2; }
+    .page-title {
+      font-family: var(--font-display);
+      font-size: clamp(60px, 9vw, 110px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    .page-title span { color: var(--red); }
+    .page-subtitle { font-size: 15px; color: var(--text-muted); max-width: 480px; line-height: 1.8; }
+
+    .templates-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      max-width: 320px;
+      width: 100%;
+    }
+    .search-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      padding: 12px 16px;
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+    .search-bar input::placeholder { color: var(--text-dim); }
+    .search-bar span { padding: 0 16px; color: var(--text-dim); font-size: 16px; }
+    .sort-select {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      color: var(--text-muted);
+      padding: 12px 16px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+    .templates-count {
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 0;
+    }
+    .templates-count span { color: var(--red); font-weight: 700; }
+
+    /* Real image cards */
+    .product-card .product-img {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      overflow: hidden;
+      font-size: 0;
+    }
+    .product-card .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .product-img img { transform: scale(1.06); }
+    .img-fallback {
+      font-size: 52px;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .img-errored { display: none !important; }
+    .img-errored ~ .img-fallback { opacity: 1; }
+
+    .load-more { text-align: center; margin-top: 48px; }
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-dim);
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: none;
+    }
+    .no-results.show { display: block; }
+
+    @media (max-width: 600px) { .page-hero { padding: 120px 24px 60px; } }
+  </style>
+</head>
+<body>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+<div class="page-transition"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">GoodStuff</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="templates.html" class="active">Templates</a></li>
+    <li><a href="custom.html">Custom Chains</a></li>
+    <li><a href="index.html#about">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-cart">
+      <span>🛒 Cart</span>
+      <span class="cart-count" style="display:none">0</span>
+    </button>
+  </div>
+  <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="cart-overlay"></div>
+<div class="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Cart</div>
+    <button class="cart-close">✕</button>
+  </div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-price">$0</span>
+    </div>
+    <button class="checkout-btn">Checkout →</button>
+  </div>
+</div>
+
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Custom Order</div>
+    <div class="modal-sub">Fill in the details and we'll build your chain within 24 hours.</div>
+    <form class="order-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" placeholder="John Doe" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discord Tag</label>
+          <input type="text" class="form-input" placeholder="user#0000" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="tier-select" required>
+          <option value="starter">Starter Custom — $20 (Glow + 2 Pendants)</option>
+          <option value="premium">Premium Custom — $35 (Extra Details)</option>
+          <option value="diamond">Diamond Custom — $50 (Hand-Placed Diamonds)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chain Style Reference</label>
+        <input type="text" class="form-input" placeholder="Cuban link, rope, tennis..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Custom Details & Notes</label>
+        <textarea class="form-textarea" placeholder="Describe your vision..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel modal-close">Cancel</button>
+        <button type="submit" class="btn-submit">Submit Order →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <div class="hero-eyebrow" style="margin-bottom:16px;">
+      <div class="hero-eyebrow-line"></div>
+      <span id="hero-count">Loading...</span>
+    </div>
+    <h1 class="page-title">CHAIN<br><span>TEMPLATES</span></h1>
+    <p class="page-subtitle">Every model is FiveM-ready, instantly downloadable after purchase. New drops added regularly. All $10 each.</p>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section class="section" style="background: var(--black);">
+  <div class="templates-controls reveal">
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="Search templates..." />
+      </div>
+      <select class="sort-select" id="sort-select">
+        <option value="default">Default</option>
+        <option value="name-asc">Name A–Z</option>
+        <option value="name-desc">Name Z–A</option>
+      </select>
+    </div>
+    <div class="templates-count">
+      Showing <span id="shown-count">0</span> of <span id="total-count">0</span> templates
+    </div>
+  </div>
+
+  <div class="products-filters reveal" style="margin-bottom:32px;">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="cuban">Cuban Link</button>
+    <button class="filter-btn" data-filter="rope">Rope</button>
+    <button class="filter-btn" data-filter="tennis">Tennis</button>
+    <button class="filter-btn" data-filter="pendant">Pendant</button>
+    <button class="filter-btn" data-filter="box">Box Chain</button>
+    <button class="filter-btn" data-filter="figaro">Figaro</button>
+    <button class="filter-btn" data-filter="herringbone">Herringbone</button>
+  </div>
+
+  <div class="products-grid" id="templates-grid"></div>
+  <div class="no-results" id="no-results">No chains found — try a different search</div>
+
+  <div class="load-more reveal" id="load-more-wrap" style="display:none;">
+    <button class="btn-outline" id="load-more-btn">Load More Templates</button>
+  </div>
+</section>
+
+<div class="cta-banner reveal">
+  <div class="cta-banner-text">
+    <div class="label">Can't find what you need?</div>
+    <div class="title">ORDER A CUSTOM CHAIN</div>
+  </div>
+  <a href="custom.html" class="btn-white">Get Custom →</a>
+</div>
+
+<footer id="about">
+  <div class="footer-grid">
+    <div class="footer-brand reveal">
+      <span class="footer-brand-logo">GoodStuff</span>
+      <p>Premium FiveM digital jewelry for the GTA RP community. Est. 2024.</p>
+      <div class="social-links">
+        <a href="#" class="social-link">💬</a>
+        <a href="#" class="social-link">🎵</a>
+        <a href="#" class="social-link">📸</a>
+        <a href="#" class="social-link">🐦</a>
+      </div>
+    </div>
+    <div class="footer-col reveal reveal-delay-1">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="templates.html">Chain Templates</a></li>
+        <li><a href="custom.html">Custom Chains</a></li>
+        <li><a href="#">Pendants</a></li>
+        <li><a href="#">New Drops</a></li>
+      </ul>
+    </div>
+    <div class="footer-col reveal reveal-delay-2">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="custom.html#how">How to Order</a></li>
+        <li><a href="custom.html#faq">Custom FAQ</a></li>
+        <li><a href="#">Delivery Info</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col reveal reveal-delay-3">
+      <h4>Follow</h4>
+      <ul>
+        <li><a href="#">Discord</a></li>
+        <li><a href="#">TikTok</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Twitter / X</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 GoodStuff. All rights reserved.</span>
+    <span>Terms &nbsp;·&nbsp; Privacy &nbsp;·&nbsp; Refund Policy</span>
+  </div>
+</footer>
+
+<!-- products.js must load BEFORE main.js so PRODUCTS array exists -->
+<script src="products.js"></script>
+<script src="main.js"></script>
+<script>
+// ==========================================
+// TEMPLATES PAGE — powered by products.js
+// ==========================================
+const ASSET_PATH = 'assets/';
+const BATCH = 18;
+
+let activeFilter = 'all';
+let searchQuery  = '';
+let sortMode     = 'default';
+let showing      = BATCH;
+
+// Set hero + total counts from PRODUCTS array
+document.getElementById('hero-count').textContent = PRODUCTS.length + ' Models Available';
+document.getElementById('total-count').textContent = PRODUCTS.length;
+
+const tmplRevealObserver = new IntersectionObserver(
+  entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+  { threshold: 0.05 }
+);
+
+function getFiltered() {
+  let list = PRODUCTS.filter(p =>
+    (activeFilter === 'all' || p.category === activeFilter) &&
+    (!searchQuery || p.name.toLowerCase().includes(searchQuery))
+  );
+  if (sortMode === 'name-asc')  list.sort((a, b) => a.name.localeCompare(b.name));
+  if (sortMode === 'name-desc') list.sort((a, b) => b.name.localeCompare(a.name));
+  return list;
+}
+
+function buildCard(p, idx) {
+  const delay = (idx % 3) + 1;
+  const badge = p.badge
+    ? `<div class="product-badge ${p.badge === 'hot' ? 'hot' : 'new'}">${p.badge === 'hot' ? '🔥 Hot' : 'New'}</div>`
+    : '';
+  return `
+    <div class="product-card reveal reveal-delay-${delay}" data-category="${p.category}" data-name="${p.name}">
+      ${badge}
+      <div class="product-img">
+        <img
+          src="${ASSET_PATH}${p.file}"
+          alt="${p.name}"
+          loading="lazy"
+          onerror="this.classList.add('img-errored');"
+        />
+        <div class="img-fallback">⛓️</div>
+        <div class="product-img-overlay">
+          <button class="product-quick-add">+ Add to Cart</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-type">Template · FiveM Ready</div>
+        <div class="product-bottom">
+          <div class="product-price">$10</div>
+          <button class="product-add-btn">+</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderGrid() {
+  const filtered = getFiltered();
+  const slice    = filtered.slice(0, showing);
+  const grid     = document.getElementById('templates-grid');
+
+  grid.innerHTML = slice.map((p, i) => buildCard(p, i)).join('');
+  document.getElementById('shown-count').textContent = slice.length;
+  document.getElementById('no-results').classList.toggle('show', filtered.length === 0);
+  document.getElementById('load-more-wrap').style.display =
+    filtered.length > showing ? 'block' : 'none';
+
+  // Bind cart buttons
+  grid.querySelectorAll('.product-quick-add, .product-add-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const card = btn.closest('.product-card');
+      if (!card) return;
+      addToCart({ name: card.dataset.name, price: 10, emoji: '⛓️' });
+      const addBtn = card.querySelector('.product-add-btn');
+      if (addBtn) {
+        addBtn.classList.add('added');
+        addBtn.textContent = '✓';
+        setTimeout(() => { addBtn.classList.remove('added'); addBtn.textContent = '+'; }, 1500);
+      }
+    });
+  });
+
+  grid.querySelectorAll('.reveal').forEach(el => tmplRevealObserver.observe(el));
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    showing = BATCH;
+    renderGrid();
+  });
+});
+
+// Search
+document.getElementById('search-input').addEventListener('input', function () {
+  searchQuery = this.value.toLowerCase().trim();
+  showing = BATCH;
+  renderGrid();
+});
+
+// Sort
+document.getElementById('sort-select').addEventListener('change', function () {
+  sortMode = this.value;
+  showing = BATCH;
+  renderGrid();
+});
+
+// Load more
+document.getElementById('load-more-btn').addEventListener('click', () => {
+  showing += BATCH;
+  renderGrid();
+});
+
+renderGrid();
+</script>
+</body>
+</html>
