@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Custom Chains — GoodStuff</title>
+  <meta name="description" content="Order a fully custom FiveM chain. Glow effects, pendants, hand-placed diamonds. Starting at $20."/>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .page-hero { padding: 160px 60px 80px; background: var(--black); position: relative; overflow: hidden; }
+    .page-hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 60%, rgba(150,0,0,0.18) 0%, transparent 55%); }
+    .page-hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%); }
+    .page-hero-content { position: relative; z-index: 2; }
+    .page-title { font-family: var(--font-display); font-size: clamp(60px, 9vw, 110px); line-height: 0.9; letter-spacing: 2px; margin-bottom: 20px; }
+    .page-title span { color: var(--red); }
+    .page-subtitle { font-size: 15px; color: var(--text-muted); max-width: 520px; line-height: 1.8; }
+
+    /* HOW IT WORKS */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    .how-step {
+      background: var(--surface);
+      padding: 48px 40px;
+      border: 1px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .how-step:hover { border-color: var(--border); background: var(--surface2); }
+    .how-step-num {
+      font-family: var(--font-display);
+      font-size: 80px;
+      color: rgba(224,26,26,0.12);
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+    .how-step-title {
+      font-family: var(--font-cond);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    .how-step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; }
+
+    /* TIERS FULL */
+    .tiers-full { display: flex; flex-direction: column; gap: 3px; }
+    .tier-full {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid transparent;
+      padding: 40px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+      align-items: center;
+      cursor: none;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .tier-full:hover { border-left-color: var(--red); background: var(--surface2); }
+    .tier-full.featured { border-left-color: var(--red); }
+    .tier-full-badge {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: var(--red);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 4px 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .tier-full-name { font-family: var(--font-display); font-size: 36px; letter-spacing: 1px; margin-bottom: 12px; }
+    .tier-full-features { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tier-full-feature { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+    .tier-full-feature::before { content: '✦'; color: var(--red); font-size: 8px; }
+    .tier-full-desc { font-size: 13px; color: var(--text-dim); max-width: 560px; line-height: 1.7; }
+    .tier-full-right { text-align: right; }
+    .tier-full-price { font-family: var(--font-display); font-size: 60px; color: var(--red); line-height: 1; margin-bottom: 16px; }
+    .tier-full-price sub { font-size: 24px; }
+
+    /* FAQ */
+    .faq-list { display: flex; flex-direction: column; gap: 0; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      cursor: none;
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--red); }
+    .faq-q-text { font-size: 15px; font-weight: 600; }
+    .faq-icon { font-size: 20px; color: var(--red); transition: transform 0.3s; font-weight: 300; line-height: 1; }
+    .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.8; max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s; }
+    .faq-a.open { max-height: 200px; padding-bottom: 20px; }
+    .faq-icon.open { transform: rotate(45deg); }
+
+    /* ORDER FORM FULL */
+    .order-full-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .order-full-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--red);
+      padding: 48px;
+    }
+    .order-info { padding-top: 20px; }
+    .order-info-title { font-family: var(--font-display); font-size: 40px; line-height: 1; margin-bottom: 16px; }
+    .order-info-desc { font-size: 14px; color: var(--text-muted); line-height: 1.8; margin-bottom: 32px; }
+    .info-points { display: flex; flex-direction: column; gap: 16px; }
+    .info-point { display: flex; align-items: flex-start; gap: 14px; }
+    .info-point-icon { font-size: 18px; min-width: 24px; }
+    .info-point-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .info-point-text strong { color: #fff; }
+
+    @media (max-width: 900px) {
+      .how-grid { grid-template-columns: 1fr; }
+      .tier-full { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; }
+      .tier-full-right { text-align: left; }
+      .order-full-grid { grid-template-columns: 1fr; gap: 40px; }
+      .order-full-form { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+<div class="page-transition"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">GoodStuff</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="templates.html">Templates</a></li>
+    <li><a href="custom.html" class="active">Custom Chains</a></li>
+    <li><a href="index.html#about">About</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-cart">
+      <span>🛒 Cart</span>
+      <span class="cart-count" style="display:none">0</span>
+    </button>
+  </div>
+  <button class="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="cart-overlay"></div>
+<div class="cart-sidebar">
+  <div class="cart-header">
+    <div class="cart-title">Your Cart</div>
+    <button class="cart-close">✕</button>
+  </div>
+  <div class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-price">$0</span>
+    </div>
+    <button class="checkout-btn">Checkout →</button>
+  </div>
+</div>
+
+<div class="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Custom Order</div>
+    <div class="modal-sub">Fill in the details and we'll build your chain within 24 hours.</div>
+    <form class="order-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" class="form-input" placeholder="John Doe" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discord Tag</label>
+          <input type="text" class="form-input" placeholder="user#0000" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="tier-select" required>
+          <option value="starter">Starter Custom — $20</option>
+          <option value="premium">Premium Custom — $35</option>
+          <option value="diamond">Diamond Custom — $50</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chain Style</label>
+        <input type="text" class="form-input" placeholder="Cuban link, rope, tennis..."/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Details & Notes</label>
+        <textarea class="form-textarea" placeholder="Describe your vision..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel modal-close">Cancel</button>
+        <button type="submit" class="btn-submit">Submit Order →</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="page-hero-content">
+    <div class="hero-eyebrow" style="margin-bottom:16px;">
+      <div class="hero-eyebrow-line"></div>
+      <span>One of a Kind</span>
+    </div>
+    <h1 class="page-title">CUSTOM<br><span>CHAINS</span></h1>
+    <p class="page-subtitle">Fully handcrafted digital jewelry built to your exact vision. Every chain is unique. Glow effects, custom pendants, and hand-placed diamonds available.</p>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Custom Built <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Glow Effects <div class="marquee-dot"></div></div>
+    <div class="marquee-item">2 Pendants Included <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Hand-Placed Diamonds <div class="marquee-dot"></div></div>
+    <div class="marquee-item">24H Delivery <div class="marquee-dot"></div></div>
+    <div class="marquee-item">FiveM Ready <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Discord Delivery <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Custom Built <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Glow Effects <div class="marquee-dot"></div></div>
+    <div class="marquee-item">2 Pendants Included <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Hand-Placed Diamonds <div class="marquee-dot"></div></div>
+    <div class="marquee-item">24H Delivery <div class="marquee-dot"></div></div>
+    <div class="marquee-item">FiveM Ready <div class="marquee-dot"></div></div>
+    <div class="marquee-item">Discord Delivery <div class="marquee-dot"></div></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how" style="background: var(--black);">
+  <div class="section-header reveal">
+    <div class="section-tag">
+      <div class="section-tag-line"></div>
+      <span>Process</span>
+    </div>
+    <h2 class="section-title">How It Works</h2>
+  </div>
+  <div class="how-grid">
+    <div class="how-step reveal reveal-delay-1">
+      <div class="how-step-num">01</div>
+      <div class="how-step-title">Pick Your Tier</div>
+      <div class="how-step-desc">Choose from Starter ($20), Premium ($35), or Diamond ($50) — each with different inclusions and levels of detail.</div>
+    </div>
+    <div class="how-step reveal reveal-delay-2">
+      <div class="how-step-num">02</div>
+      <div class="how-step-title">Describe Your Vision</div>
+      <div class="how-step-desc">Fill out the order form with your chain style, pendant preferences, glow color, and any reference images you have.</div>
+    </div>
+    <div class="how-step reveal reveal-delay-3">
+      <div class="how-step-num">03</div>
+      <div class="how-step-title">Receive in 24H</div>
+      <div class="how-step-desc">Your custom chain arrives via Discord DM, fully FiveM-compatible. Ready to drop straight into your server.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TIERS -->
+<section class="section" style="background: var(--surface);">
+  <div class="section-header reveal">
+    <div class="section-tag">
+      <div class="section-tag-line"></div>
+      <span>Pricing</span>
+    </div>
+    <h2 class="section-title">Choose Your Tier</h2>
+  </div>
+  <div class="tiers-full">
+    <div class="tier-full reveal reveal-delay-1">
+      <div>
+        <div class="tier-full-name">Starter Custom</div>
+        <div class="tier-full-features">
+          <span class="tier-full-feature">Glow effect</span>
+          <span class="tier-full-feature">2 Pendants</span>
+          <span class="tier-full-feature">Custom chain style</span>
+          <span class="tier-full-feature">FiveM ready</span>
+        </div>
+        <div class="tier-full-desc">Perfect entry into custom chains. You pick the style and we add glow and two pendants of your choice. Delivered to your Discord within 24 hours.</div>
+      </div>
+      <div class="tier-full-right">
+        <div class="tier-full-price"><sub>$</sub>20</div>
+        <button class="tier-btn btn-primary" onclick="document.querySelector('[data-open-order]').click()">Order Now →</button>
+      </div>
+    </div>
+    <div class="tier-full featured reveal reveal-delay-2">
+      <div class="tier-full-badge">Most Popular</div>
+      <div>
+        <div class="tier-full-name">Premium Custom</div>
+        <div class="tier-full-features">
+          <span class="tier-full-feature">Everything in Starter</span>
+          <span class="tier-full-feature">Extra details & texture</span>
+          <span class="tier-full-feature">Priority queue</span>
+          <span class="tier-full-feature">Revision included</span>
+        </div>
+        <div class="tier-full-desc">All the Starter features plus enhanced detailing, texture work, and bump to the priority queue. One revision is included free of charge.</div>
+      </div>
+      <div class="tier-full-right">
+        <div class="tier-full-price"><sub>$</sub>35</div>
+        <button class="tier-btn btn-primary" onclick="document.querySelector('[data-open-order]').click()">Order Now →</button>
+      </div>
+    </div>
+    <div class="tier-full reveal reveal-delay-3">
+      <div>
+        <div class="tier-full-name">Diamond Custom</div>
+        <div class="tier-full-features">
+          <span class="tier-full-feature">Everything in Premium</span>
+          <span class="tier-full-feature">Hand-placed diamonds</span>
+          <span class="tier-full-feature">VIP treatment</span>
+          <span class="tier-full-feature">2 revisions</span>
+        </div>
+        <div class="tier-full-desc">The full GoodStuff experience. Every diamond is individually placed by hand for maximum realism. Two revisions included. VIP delivery.</div>
+      </div>
+      <div class="tier-full-right">
+        <div class="tier-full-price"><sub>$</sub>50</div>
+        <button class="tier-btn btn-primary" onclick="document.querySelector('[data-open-order]').click()">Order Now →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER FORM + INFO -->
+<section class="section" style="background: var(--black);">
+  <div class="order-full-grid">
+    <div class="order-full-form reveal">
+      <div style="font-family:var(--font-display);font-size:32px;letter-spacing:1px;margin-bottom:8px;">Place Your Order</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:32px;">We'll DM you on Discord within 24 hours.</div>
+      <form class="order-form-inline">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Your Name</label>
+            <input type="text" class="form-input" placeholder="John Doe" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Discord Tag</label>
+            <input type="text" class="form-input" placeholder="user#0000" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tier</label>
+          <select class="form-select" required>
+            <option value="">Select a tier...</option>
+            <option value="starter">Starter Custom — $20</option>
+            <option value="premium">Premium Custom — $35</option>
+            <option value="diamond">Diamond Custom — $50</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chain Style</label>
+          <input type="text" class="form-input" placeholder="e.g. Cuban link, rope, tennis chain..." required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pendant Preferences</label>
+          <input type="text" class="form-input" placeholder="e.g. cross, star, crown, custom letter..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Glow Color (if applicable)</label>
+          <input type="text" class="form-input" placeholder="e.g. red, blue, white, gold..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Additional Details</label>
+          <textarea class="form-textarea" placeholder="Any extra info, reference images, server name, etc..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">FiveM Server (optional)</label>
+          <input type="text" class="form-input" placeholder="For compatibility checks"/>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;">Submit Order →</button>
+      </form>
+    </div>
+    <div class="order-info reveal reveal-delay-2">
+      <div class="order-info-title">What to<br><span style="color:var(--red)">Expect</span></div>
+      <div class="order-info-desc">Here's everything you need to know about the custom chain ordering process.</div>
+      <div class="info-points">
+        <div class="info-point">
+          <div class="info-point-icon">⚡</div>
+          <div class="info-point-text"><strong>24 Hour Turnaround</strong><br>Most orders are completed within 24 hours of submission. Priority queue for Premium and Diamond tiers.</div>
+        </div>
+        <div class="info-point">
+          <div class="info-point-icon">💬</div>
+          <div class="info-point-text"><strong>Discord Delivery</strong><br>Your finished chain is delivered via Discord DM. Make sure your DMs are open after ordering.</div>
+        </div>
+        <div class="info-point">
+          <div class="info-point-icon">🎮</div>
+          <div class="info-point-text"><strong>FiveM Ready</strong><br>Every chain is tested and formatted to work seamlessly with FiveM. Plug and play — no setup needed.</div>
+        </div>
+        <div class="info-point">
+          <div class="info-point-icon">🔄</div>
+          <div class="info-point-text"><strong>Revisions Included</strong><br>Premium gets 1 revision, Diamond gets 2. We want you to love your chain.</div>
+        </div>
+        <div class="info-point">
+          <div class="info-point-icon">💳</div>
+          <div class="info-point-text"><strong>Payment</strong><br>Payment details are sent via Discord DM after your order is confirmed. We accept common payment methods.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section" id="faq" style="background: var(--surface);">
+  <div class="section-header reveal">
+    <div class="section-tag">
+      <div class="section-tag-line"></div>
+      <span>FAQ</span>
+    </div>
+    <h2 class="section-title">Common Questions</h2>
+  </div>
+  <div class="faq-list reveal">
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">How do I install the chain in FiveM?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">After receiving your chain file via Discord, place it in your FiveM resource folder and add it to your server.cfg. We'll include a quick install guide with every order.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">Can I see a preview before paying?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">For custom orders, we do a quick concept check via Discord before finalizing. You won't be charged until you're happy with the direction.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">Do you do bulk orders for server packs?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Yes! If you need 5+ chains for a server pack, DM us on Discord for bulk pricing. We work with server owners and RP communities regularly.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">What if I'm not happy with the result?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Premium gets 1 free revision, Diamond gets 2. For Starter, we'll still try our best to make adjustments. Our goal is for you to love your chain.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">How do I pay?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">After submitting your order, we'll DM you on Discord with payment instructions. We accept PayPal, CashApp, and other common methods.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">
+        <span class="faq-q-text">Are the templates different from custom chains?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-a">Yes — templates are pre-made, ready-to-use chain models at $10 each. Custom chains are built from scratch to your exact specifications, starting at $20.</div>
+    </div>
+  </div>
+</section>
+
+<div class="cta-banner reveal">
+  <div class="cta-banner-text">
+    <div class="label">Ready to get dripped?</div>
+    <div class="title">BROWSE ALL TEMPLATES</div>
+  </div>
+  <a href="templates.html" class="btn-white">Shop Templates →</a>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand reveal">
+      <span class="footer-brand-logo">GoodStuff</span>
+      <p>Premium FiveM digital jewelry for the GTA RP community. Est. 2024.</p>
+      <div class="social-links">
+        <a href="#" class="social-link">💬</a>
+        <a href="#" class="social-link">🎵</a>
+        <a href="#" class="social-link">📸</a>
+        <a href="#" class="social-link">🐦</a>
+      </div>
+    </div>
+    <div class="footer-col reveal reveal-delay-1">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="templates.html">Chain Templates</a></li>
+        <li><a href="custom.html">Custom Chains</a></li>
+        <li><a href="#">Pendants</a></li>
+        <li><a href="#">New Drops</a></li>
+      </ul>
+    </div>
+    <div class="footer-col reveal reveal-delay-2">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#how">How to Order</a></li>
+        <li><a href="#faq">Custom FAQ</a></li>
+        <li><a href="#">Delivery Info</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-col reveal reveal-delay-3">
+      <h4>Follow</h4>
+      <ul>
+        <li><a href="#">Discord</a></li>
+        <li><a href="#">TikTok</a></li>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Twitter / X</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 GoodStuff. All rights reserved.</span>
+    <span>Terms &nbsp;·&nbsp; Privacy &nbsp;·&nbsp; Refund Policy</span>
+  </div>
+</footer>
+
+<script src="main.js"></script>
+<script>
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const answer = q.nextElementSibling;
+    const icon = q.querySelector('.faq-icon');
+    const isOpen = answer.classList.contains('open');
+    document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+    document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
+    if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
+  });
+});
+
+// Inline order form
+document.querySelector('.order-form-inline')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type=submit]');
+  btn.textContent = '✓ Order Submitted!';
+  btn.style.background = '#1a7a1a';
+  setTimeout(() => { btn.textContent = 'Submit Order →'; btn.style.background = ''; }, 3000);
+  if (typeof showToast === 'function') showToast('Order submitted! Check your Discord DMs');
+});
+</script>
+</body>
+</html>
